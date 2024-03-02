@@ -4,34 +4,46 @@ import java.util.ArrayList;
 
 public class InterpretSQl {
 
-    // * CODIGO PARA INTERPRETAR CODIGO SQL
     public static ArrayList<String> interpretSQL(String sql) {
-
         ArrayList<String> data = new ArrayList<String>();
         // Eliminar espacios en blanco extra y convertir a minúsculas
-        if (!sql.trim().toLowerCase().startsWith("select")) {
-        System.out.println("Error: La consulta debe comenzar con SELECT");
-        return null;
-    }
+        String lowerCaseSql = sql.trim().toLowerCase();
+        if (!lowerCaseSql.startsWith("select")) {
+            System.out.println("Error: La consulta debe comenzar con SELECT");
+            return null;
+        }
 
-    // Encontrar la posición de la palabra "from" (ignorando mayúsculas/minúsculas)
-    int fromIndex = sql.trim().toLowerCase().indexOf("from");
+        // Encontrar la posición de la palabra "from" (ignorando mayúsculas/minúsculas)
+        int fromIndex = lowerCaseSql.indexOf("from");
 
-    // Verificar si "from" se encuentra en la consulta
-    if (fromIndex < 0) {
-        System.out.println("Error: Consulta incompleta");
-        return null;
-    }
+        // Verificar si "from" se encuentra en la consulta
+        if (fromIndex < 0) {
+            System.out.println("Error: Consulta incompleta");
+            return null;
+        }
 
-    // Obtener las columnas y la tabla
-    String columns = sql.substring(6, fromIndex).trim();
-    String table = sql.substring(fromIndex + 4).trim();
+        // Obtener las columnas y la tabla
+        String columns = sql.substring(6, fromIndex).trim();
+        // Obtener el índice después de "FROM"
+        int afterFromIndex = fromIndex + 4;
+        // Obtener el índice de "ORDER BY" (si existe)
+        int orderByIndex = lowerCaseSql.indexOf("order by");
+        String table;
+        if (orderByIndex >= 0) {
+            table = sql.substring(afterFromIndex, orderByIndex).trim();
+        } else {
+            table = sql.substring(afterFromIndex).trim();
+        }
 
-    // Agregar las columnas y la tabla a la lista
-    data.add(columns);
-    data.add(table);
+        // Agregar las columnas y la tabla a la lista
+        data.add(columns);
+        data.add(table);
 
-    return data;
+        // Verificar si la consulta incluye un ORDER BY DESC
+        String order = lowerCaseSql.contains("desc") ? "DESC" : "ASC";
+        data.add(order);
+
+        return data;
     }
 
 }

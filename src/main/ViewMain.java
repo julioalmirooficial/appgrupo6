@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import library.ReadTableData;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,11 +20,14 @@ public class ViewMain extends javax.swing.JFrame {
 
     private void read(String table, String query) {
 
-        if (query.equals("")) {
+            InterpretSQl sql = new InterpretSQl();
+            ArrayList dataSQl = sql.interpretSQL(query);
+            boolean exist = dataSQl.get(0).equals("*");
+        if (query.equals("") || exist) {
             ReadTableData readData = new ReadTableData();
             ReadCatalog readCatalog = new ReadCatalog();
             DefaultTableModel model;
-            ArrayList<String> data = readCatalog.catalog(table);
+            ArrayList<String> data = readCatalog.catalog(exist?dataSQl.get(1).toString():table);
             String[] headers = new String[data.size()];
             String[] registers = new String[headers.length];
             for (int i = 0; i < headers.length; i++) {
@@ -31,7 +35,7 @@ public class ViewMain extends javax.swing.JFrame {
             }
             model = new DefaultTableModel(null, headers);
 
-            List<String[]> tableData = readData.readTableData(table);
+            List<String[]> tableData = readData.readTableData(exist?dataSQl.get(1).toString():table);
 
             if (tableData != null) {
                 String str = "";
@@ -66,8 +70,6 @@ public class ViewMain extends javax.swing.JFrame {
             }
             tabla.setModel(model);
         } else {
-            InterpretSQl sql = new InterpretSQl();
-            ArrayList dataSQl = sql.interpretSQL(query);
 
             ReadTableData readData = new ReadTableData();
             ReadCatalog readCatalog = new ReadCatalog();
@@ -76,9 +78,8 @@ public class ViewMain extends javax.swing.JFrame {
 
             String[] datas = data.toArray(new String[0]);
             String[] columns = dataSQl.get(0).toString().split(",");
-            int [] index = indices(datas, columns);
-            
-            
+            int[] index = indices(datas, columns);
+
             String[] headers = new String[index.length];
             String[] registers = new String[headers.length];
             for (int i = 0; i < index.length; i++) {
@@ -105,7 +106,6 @@ public class ViewMain extends javax.swing.JFrame {
                         }
                     }
                     str = "";
-                    System.out.println(index.length);
                     for (int i = 0; i < index.length; i++) {
                         if (i < index.length) {
                             registers[i] = reg.get(index[i]);
@@ -119,8 +119,7 @@ public class ViewMain extends javax.swing.JFrame {
                 System.out.println("Error reading table data.");
             }
             tabla.setModel(model);
-            
-            
+
         }
 
     }
@@ -241,7 +240,8 @@ public class ViewMain extends javax.swing.JFrame {
 
         txtQuery.setColumns(20);
         txtQuery.setRows(5);
-        txtQuery.setText("SELECT Codigo FROM UBIGEO");
+        txtQuery.setText("SELECT Codigo FROM UBIGEO ORDER BY DESC");
+        txtQuery.setToolTipText("");
         jScrollPane2.setViewportView(txtQuery);
 
         jButton1.setBackground(new java.awt.Color(3, 141, 79));
