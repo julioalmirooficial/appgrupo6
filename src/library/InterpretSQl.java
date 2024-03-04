@@ -1,6 +1,8 @@
 package library;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InterpretSQl {
 
@@ -22,28 +24,64 @@ public class InterpretSQl {
             return null;
         }
 
-        // Obtener las columnas y la tabla
-        String columns = sql.substring(6, fromIndex).trim();
-        // Obtener el índice después de "FROM"
-        int afterFromIndex = fromIndex + 4;
-        // Obtener el índice de "ORDER BY" (si existe)
-        int orderByIndex = lowerCaseSql.indexOf("order by");
-        String table;
-        if (orderByIndex >= 0) {
-            table = sql.substring(afterFromIndex, orderByIndex).trim();
-        } else {
-            table = sql.substring(afterFromIndex).trim();
+        // Obtener las columnas y la tabla utilizando una expresión regular
+        Pattern pattern = Pattern.compile("select\\s+(.*?)\\s+from\\s+(\\w+)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sql);
+        String columns = "";
+        String table = "";
+        if (matcher.find()) {
+            columns = matcher.group(1).trim().replace(",", " ");
+            table = matcher.group(2).trim();
         }
 
-        // Agregar las columnas y la tabla a la lista
+        // Obtener el índice de "ORDER BY" (si existe)
+        int orderByIndex = lowerCaseSql.indexOf("order by");
+
+        String orderByColumn = "null";
+        if (orderByIndex >= 0) {
+            int orderByStartIndex = orderByIndex + 8; // Longitud de "order by"
+            int orderByEndIndex = lowerCaseSql.length();
+            int descIndex = lowerCaseSql.indexOf(" desc", orderByStartIndex);
+            int ascIndex = lowerCaseSql.indexOf(" asc", orderByStartIndex);
+            if (descIndex >= 0 && descIndex < orderByEndIndex) {
+                orderByEndIndex = descIndex;
+            }
+            if (ascIndex >= 0 && ascIndex < orderByEndIndex) {
+                orderByEndIndex = ascIndex;
+            }
+            orderByColumn = sql.substring(orderByStartIndex, orderByEndIndex).trim();
+        }
+
+        // Agregar las columnas, la tabla y los demás datos a la lista
         data.add(columns);
         data.add(table);
 
         // Verificar si la consulta incluye un ORDER BY DESC
         String order = lowerCaseSql.contains("desc") ? "DESC" : "ASC";
         data.add(order);
-
+        data.add(orderByColumn);
+        data.add(obtenerNombre(sql));
+        data.add(obtenerValor(sql));
+        System.out.println(data);
         return data;
+    }
+
+    public static String obtenerNombre(String query) {
+        Pattern pattern = Pattern.compile("where\\s+(\\w+)\\s*=\\s*'(.+?)'", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(query);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    public static String obtenerValor(String query) {
+        Pattern pattern = Pattern.compile("where\\s+\\w+\\s*=\\s*'(.+?)'", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(query);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 
 }
