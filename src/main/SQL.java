@@ -198,7 +198,6 @@ public class SQL extends javax.swing.JFrame {
         txtQuery.setColumns(20);
         txtQuery.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         txtQuery.setRows(5);
-        txtQuery.setText("SELECT * FROM ubigeo");
         jScrollPane2.setViewportView(txtQuery);
 
         btnExecute.setText("Ejecutar consulta");
