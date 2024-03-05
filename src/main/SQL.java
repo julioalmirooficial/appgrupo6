@@ -35,6 +35,23 @@ public class SQL extends javax.swing.JFrame {
         if (arraySQL == null) {
             return;
         }
+
+        boolean contieneNumero = false;
+        String valorNumerico = "";
+        if (arraySQL != null) {
+            String[] newColumn = arraySQL.get(0).toString().split(" ");
+
+            for (String elemento : newColumn) {
+                try {
+                    Double.parseDouble(elemento);
+                    valorNumerico = elemento; // Intenta convertir el elemento a un número
+                    contieneNumero = true; // Si tiene éxito, el elemento es un número
+                    break; // Sal del ciclo porque ya encontraste un número
+                } catch (NumberFormatException e) {
+                    // El elemento no es un número
+                }
+            }
+        }
         //Valida si el filtrado de datos es por colmunas o en general
         boolean exist = arraySQL.get(0).equals("*");
 
@@ -45,9 +62,13 @@ public class SQL extends javax.swing.JFrame {
         String colmunName = null;
         int[] indexOrderWhere = null;
 
-        ArrayList<String> data = null;
+        ArrayList<String> data = new ArrayList<>();
+        data = catalogs.catalog(arraySQL.get(1).toString().toUpperCase());
+        if (contieneNumero == true) {
+            data.add(String.valueOf(valorNumerico)); // Asigna el valor numérico al tercer elemento de cada arreglo
+        }
+
         if (exist) {
-            data = catalogs.catalog(arraySQL.get(1).toString().toUpperCase());
 
             //Creamos la colmunas de las tablas
             headers = new String[data.size()];
@@ -61,7 +82,6 @@ public class SQL extends javax.swing.JFrame {
             indexOrder = indexs.buscarIndices(datas, columns);
 
         } else {
-            data = catalogs.catalog(String.valueOf(arraySQL.get(1)).toUpperCase());
 
             String[] datas = data.toArray(new String[0]);
             String[] columns = arraySQL.get(0).toString().split(" ");
@@ -86,6 +106,14 @@ public class SQL extends javax.swing.JFrame {
         //Lista de datos de la tabla
         List<String[]> tableData = arrayData.readTableData(String.valueOf(arraySQL.get(1)));
 
+        if (contieneNumero) {
+            for (String[] arreglo : tableData) {
+                String[] nuevoArreglo = new String[arreglo.length + 1]; // Crear un nuevo arreglo con un tamaño mayor
+                System.arraycopy(arreglo, 0, nuevoArreglo, 0, arreglo.length); // Copiar los elementos del arreglo original al nuevo arreglo
+                nuevoArreglo[nuevoArreglo.length - 1] = valorNumerico; // Asignar valorNumerico a la última posición del nuevo arreglo
+                tableData.set(tableData.indexOf(arreglo), nuevoArreglo); // Reemplazar el arreglo original con el nuevo arreglo en la lista
+            }
+        }
         /**
          * ***********************************************************************
          * Convertimos si el usuario a ingresado mayusculas o minusculas
@@ -198,6 +226,7 @@ public class SQL extends javax.swing.JFrame {
         txtQuery.setColumns(20);
         txtQuery.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         txtQuery.setRows(5);
+        txtQuery.setText("select 123 from ubigeo");
         jScrollPane2.setViewportView(txtQuery);
 
         btnExecute.setText("Ejecutar consulta");

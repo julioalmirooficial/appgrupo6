@@ -147,28 +147,28 @@ public class ReadTableData {
         }
     }
 
-//    public static void main(String[] args) {
-//        ReadTableData d = new ReadTableData();
-//        List<String[]> tableData = d.readTableData("ubigeo");
-//
-//        int[] index = {2};
-////        upperCaseAndLowerCase(tableData, index, true);
-//        replaceWithLength(tableData, index);
-//
-//        for (String[] record : tableData) {
-//            System.out.print("{");
-//            for (int i = 0; i < record.length; i++) {
-//                System.out.print(record[i]);
-//                if (i < record.length - 1) {
-//                    System.out.print(",");
-//                }
-//                if (i == record.length - 1) {
-//                    System.out.println("}");
-//                } else {
-//                    System.out.print(" ");
-//                }
-//            }
-//        }
-//
-//    }
+    public static void main(String[] args) {
+        ReadTableData d = new ReadTableData();
+        List<String[]> tableData = d.readTableData("ubigeo");
+
+        int[] index = {2};
+//        upperCaseAndLowerCase(tableData, index, true);
+        replaceWithLength(tableData, index);
+
+        for (String[] record : tableData) {
+            System.out.print("{");
+            for (int i = 0; i < record.length; i++) {
+                System.out.print(record[i]);
+                if (i < record.length - 1) {
+                    System.out.print(",");
+                }
+                if (i == record.length - 1) {
+                    System.out.println("}");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+        }
+
+    }
 }
