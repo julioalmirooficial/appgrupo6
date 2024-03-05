@@ -78,6 +78,7 @@ public class ReadTableData {
     }
 
     /**
+     * Método para order de forma descendete o ascendente
      *
      * @param tableData lista de registros de la tabla
      * @param index indice de la colmuna a ordenar
@@ -91,6 +92,14 @@ public class ReadTableData {
         Collections.sort(tableData, comparator);
     }
 
+    /**
+     * Método para buscar un valor en el arreglo de datos
+     *
+     * @param tableData lista de registros de la tabla
+     * @param index index a buscar
+     * @param value Valor a buscar
+     * @return
+     */
     public static List<String[]> searchByValue(List<String[]> tableData, int index, String value) {
         List<String[]> result = new ArrayList<>();
         for (String[] record : tableData) {
@@ -101,27 +110,65 @@ public class ReadTableData {
         return result;
     }
 
-//    public static void main(String[] args) {
-//        ReadTableData d = new ReadTableData();
-//        List<String[]> tableData = d.readTableData("ubigeo");
-//        sortByIndex(tableData, 1, false); // Ascendente
-//        // Buscar registros que contengan "LIMA" en el índice 2
-//        List<String[]> searchResult = searchByValue(tableData, 2, "LIMA");
-//        for (String[] record : searchResult) {
-//            System.out.print("{");
-//            for (int i = 0; i < record.length; i++) {
-//                System.out.print(record[i]);
-//                if (i < record.length - 1) {
-//                    System.out.print(",");
-//                }
-//                if (i == record.length - 1) {
-//                    System.out.println("}");
-//                } else {
-//                    System.out.print(" ");
-//                }
-//            }
-//        }
-//
-//    }
+    /**
+     * *******************************************************************
+     * METODOS NUEVOS
+     ********************************************************************
+     */
+    
+    /**
+     * Método para convertir a mayusculas y minusculas
+     *
+     * @param tableData lista de registros de la tabla
+     * @param indices indices a ordernar
+     * @param toUpperCase si es uppercase o lowercase
+     */
+    public static void upperCaseAndLowerCase(List<String[]> tableData, int[] indices, boolean toUpperCase) {
+        for (String[] row : tableData) {
+            for (int index : indices) {
+                String value = row[index];
+                row[index] = toUpperCase ? value.toUpperCase() : value.toLowerCase();
+            }
+        }
+    }
 
+    /**
+     * Método para reemplazar por la longitud en indices especificados
+     *
+     * @param tableData
+     * @param indices
+     */
+    public static void replaceWithLength(List<String[]> tableData, int[] indices) {
+        for (String[] row : tableData) {
+            for (int index : indices) {
+                String value = row[index];
+                row[index] = String.valueOf(value.length());
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        ReadTableData d = new ReadTableData();
+        List<String[]> tableData = d.readTableData("ubigeo");
+
+        int[] index = {2};
+//        upperCaseAndLowerCase(tableData, index, true);
+        replaceWithLength(tableData, index);
+
+        for (String[] record : tableData) {
+            System.out.print("{");
+            for (int i = 0; i < record.length; i++) {
+                System.out.print(record[i]);
+                if (i < record.length - 1) {
+                    System.out.print(",");
+                }
+                if (i == record.length - 1) {
+                    System.out.println("}");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+        }
+
+    }
 }
