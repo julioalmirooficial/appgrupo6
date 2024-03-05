@@ -33,6 +33,8 @@ public class SQL extends javax.swing.JFrame {
         ArrayList arraySQL = null;
         arraySQL = sql.interpretSQL(query);
         if (arraySQL == null) {
+            JOptionPane.showMessageDialog(this, "Ingresa la consulta válida por favor...", "ERROR", JOptionPane.ERROR_MESSAGE);
+            
             return;
         }
 
@@ -223,10 +225,12 @@ public class SQL extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(dataTable);
 
+        txtQuery.setBackground(new java.awt.Color(255, 255, 255));
         txtQuery.setColumns(20);
         txtQuery.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        txtQuery.setForeground(new java.awt.Color(68, 78, 96));
         txtQuery.setRows(5);
-        txtQuery.setText("select 123 from ubigeo");
+        txtQuery.setBorder(null);
         jScrollPane2.setViewportView(txtQuery);
 
         btnExecute.setText("Ejecutar consulta");

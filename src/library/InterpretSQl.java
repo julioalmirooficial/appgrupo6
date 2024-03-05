@@ -10,25 +10,29 @@ public class InterpretSQl {
     public static ArrayList<String> interpretSQL(String sql) {
         String sqlAlter = sql;
         sql = sql.replaceAll("(length|upper|lower)\\((.*?)\\)", "$2");
-        
-        
+
         // Verificar si después de una coma biene mas comas seguidos
-        Pattern patternVerifyErrorComa = Pattern.compile(",,");
-        Matcher matcherVerifyErrorComa = patternVerifyErrorComa.matcher(sqlAlter);
-        if (matcherVerifyErrorComa.find()) {
-            JOptionPane.showMessageDialog(null, "Por favor ingresa una sentencias valida,\n no puedes ingresar [,,] seguidos.","ERROR",JOptionPane.ERROR_MESSAGE);
+        Pattern patternVerifyErrorPoints = Pattern.compile(",\\s*:+");
+        Matcher matcherVerifyErrorPoints = patternVerifyErrorPoints.matcher(sqlAlter);
+        if (matcherVerifyErrorPoints.find()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingresa una sentencias valida,\n no puedes ingresar [,:] seguidos.", "ERROR", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        
-        
+        // Verificar si después de una coma biene mas comas seguidos
+        Pattern patternVerifyErrorComa = Pattern.compile(",\\s*,+");
+        Matcher matcherVerifyErrorComa = patternVerifyErrorComa.matcher(sqlAlter);
+        if (matcherVerifyErrorComa.find()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingresa una sentencias valida,\n no puedes ingresar [,,] seguidos.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
         // Verificar si después de una coma viene un asterisco
         Pattern patternVerifyErrorAsterisk = Pattern.compile(",\\s*\\*");
         Matcher matcherVerifyErrorAsterisk = patternVerifyErrorAsterisk.matcher(sqlAlter);
         if (matcherVerifyErrorAsterisk.find()) {
-            JOptionPane.showMessageDialog(null, "Por favor ingresa una sentencias valida","ERROR",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Por favor ingresa una sentencias valida", "ERROR", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        
 
         // Obtener las funciones separadas por coma
         // Inicializar la variable functions como null
@@ -65,10 +69,6 @@ public class InterpretSQl {
         if (valuesBuilder.length() > 0) {
             FunctionsValues = valuesBuilder.toString().replaceAll(",$", "");
         }
-        
-        
-        
-        
 
         ArrayList<String> data = new ArrayList<String>();
         // Eliminar espacios en blanco extra y convertir a minúsculas
@@ -127,7 +127,7 @@ public class InterpretSQl {
         data.add(obtenerValor(sql)); //Indice 5
         data.add(functions); //Indice 6 nombre de las funcionas
         data.add(FunctionsValues); //Indice  7 valor de las funciones
-        
+
         return data;
     }
 
