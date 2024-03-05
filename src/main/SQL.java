@@ -20,7 +20,7 @@ public class SQL extends javax.swing.JFrame {
     private void executeQuery(String query) {
         //validamos si el query es vacio
         if (txtQuery.getText().length() <= 6) {
-            JOptionPane.showMessageDialog(this, "Ingresa la consulta por favor...");
+            JOptionPane.showMessageDialog(this, "Ingresa la consulta por favor...", "ERROR", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -32,6 +32,9 @@ public class SQL extends javax.swing.JFrame {
         InterpretSQl sql = new InterpretSQl();
         ArrayList arraySQL = null;
         arraySQL = sql.interpretSQL(query);
+        if (arraySQL == null) {
+            return;
+        }
         //Valida si el filtrado de datos es por colmunas o en general
         boolean exist = arraySQL.get(0).equals("*");
 
@@ -76,19 +79,54 @@ public class SQL extends javax.swing.JFrame {
             }
         }
         if (indexOrder.length <= 0) {
-            JOptionPane.showMessageDialog(this, "Ingresa una columna valida de ordenamiento...\nLa columna [" + colmunName + "] no existe");
+            JOptionPane.showMessageDialog(this, "Ingresa una columna valida de ordenamiento...\nLa columna [" + colmunName + "] no existe", "ERROR", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         //Lista de datos de la tabla
         List<String[]> tableData = arrayData.readTableData(String.valueOf(arraySQL.get(1)));
 
+        /**
+         * ***********************************************************************
+         * Convertimos si el usuario a ingresado mayusculas o minusculas
+         * ***********************************************************************
+         */
+        if (arraySQL.get(6) != null && arraySQL.get(7) != null) {
+            int[] indexElement = null;
+            SearchIndex searchIndex = new SearchIndex();
+            String[] functions = arraySQL.get(6).toString().split(" ");
+
+            indexElement = searchIndex.buscarIndices(data.toArray(new String[0]), arraySQL.get(7).toString().split(" "));
+            for (int i = 0; i < functions.length; i++) {
+                if (indexElement.length > i) {
+                    int[] indexScope = {indexElement[i]};
+                    String function = functions[i];
+
+                    if (function.equals("upper")) {
+                        arrayData.upperCaseAndLowerCase(tableData, indexScope, true);
+                    } else if (function.equals("lower")) {
+                        arrayData.upperCaseAndLowerCase(tableData, indexScope, false);
+                    }
+
+                    /*
+                     * ***********************************************************************
+                     * Validamos si el usuario ingreso el length
+                     * ***********************************************************************
+                     */
+                    if (function.equals("length")) {
+                        arrayData.replaceWithLength(tableData, indexScope);
+                    }
+
+                }
+
+            }
+        }
+
         //Ordenar la data de forma descendiente o ascendente
         arrayData.sortByIndex(tableData, indexOrder != null ? indexOrder[0] : 1, arraySQL.get(2).toString().equals("DESC") ? false : true);
 
         List<String[]> searchResult = null;
         //Funcionalidad de busqueda de datos
-
         if (arraySQL.get(4) != null && arraySQL.get(5) != null) {
 
             String[] columns = arraySQL.get(4).toString().split(" ");
@@ -160,6 +198,7 @@ public class SQL extends javax.swing.JFrame {
         txtQuery.setColumns(20);
         txtQuery.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         txtQuery.setRows(5);
+        txtQuery.setText("SELECT * FROM ubigeo");
         jScrollPane2.setViewportView(txtQuery);
 
         btnExecute.setText("Ejecutar consulta");
@@ -187,11 +226,11 @@ public class SQL extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnExecute, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
                 .addContainerGap())
         );
 

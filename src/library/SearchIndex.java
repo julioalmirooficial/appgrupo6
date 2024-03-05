@@ -1,7 +1,6 @@
 package library;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SearchIndex {
@@ -26,7 +25,8 @@ public class SearchIndex {
         }
 
         // Ordenar los índices de forma ascendente
-        Collections.sort(indicesEncontrados);
+        
+//        Collections.sort(indicesEncontrados);
 
         // Convertir la lista de índices a un arreglo de enteros
         int[] resultado = new int[indicesEncontrados.size()];
